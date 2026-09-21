@@ -1,0 +1,62 @@
+# Lima VM for validating the Remotype Linux host against a real display server.
+#
+# Deliberately headless and small. The open questions are whether a compositor
+# accepts our uinput virtual device and whether X11 and Wayland agree about the
+# keymap — none of which needs a desktop environment. Xvfb and headless weston
+# answer them in tens of megabytes instead of the gigabytes GNOME would cost,
+# which matters on a Mac that is already 94% full.
+#
+#   limactl start --name=remotype-linux ci/remotype-linux.yaml
+#   limactl shell remotype-linux
+#   limactl stop remotype-linux && limactl delete remotype-linux   # reclaims everything
+
+vmType: "vz"                 # Apple Virtualization.framework: no QEMU, much faster
+rosetta:
+  enabled: false             # arm64 guest on arm64 host; nothing to translate
+  binfmt: false
+
+images:
+  - location: "https://cloud-images.ubuntu.com/releases/24.04/release/ubuntu-24.04-server-cloudimg-arm64.img"
+    arch: "aarch64"
+  - location: "https://cloud-images.ubuntu.com/releases/24.04/release/ubuntu-24.04-server-cloudimg-amd64.img"
+    arch: "x86_64"
+
+cpus: 2
+memory: "2GiB"
+disk: "12GiB"                # sparse: real usage is ~2GB, this is only the ceiling
+
+mounts:
+  # Point this at the linux/ directory of your checkout.
+  - location: "~/remotype-host/linux"
+    writable: false          # we build on the host and run the binary in here
+
+containerd:
+  system: false
+  user: false                # no containerd, no k8s images, no wasted gigabytes
+
+provision:
+  - mode: system
+    script: |
+      #!/bin/bash
+      set -eux -o pipefail
+      export DEBIAN_FRONTEND=noninteractive
+      apt-get update -qq
+      # evtest reads back what we inject; Xvfb and weston are the two display
+      # servers we need to disagree about nothing. xdotool tells us what X11
+      # actually received, which is the real assertion.
+      apt-get install -y --no-install-recommends \
+        evtest xvfb x11-utils xdotool weston libinput-tools kbd console-data
+      # uinput is not autoloaded on a server image.
+      modprobe uinput || true
+      echo uinput > /etc/modules-load.d/uinput.conf
+      # Let the login user open /dev/uinput without sudo, the same rule the
+      # README asks a real user to add.
+      echo 'KERNEL=="uinput", MODE="0660", GROUP="input", OPTIONS+="static_node=uinput"' \
+        > /etc/udev/rules.d/99-remotype-uinput.rules
+      udevadm control --reload-rules || true
+      udevadm trigger || true
+  - mode: user
+    script: |
+      #!/bin/bash
+      set -eux -o pipefail
+      sudo usermod -aG input "$USER"

@@ -1,0 +1,5 @@
+*.swp
+chromecast
+go-chromecast
+dist/
+go-chromecast.exe

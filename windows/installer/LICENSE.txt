@@ -1,0 +1,96 @@
+REMOTYPE HOST — LICENCE AND TERMS
+
+Remotype Host is made by Custavia (https://custavia.com).
+
+Please read this before installing.
+
+
+1. WHAT THIS SOFTWARE IS
+
+Remotype Host is the companion program for the Remotype phone app. It runs on
+this computer and lets a phone you control act as its keyboard, trackpad and
+remote, and — when you turn those features on — show this computer's screen on
+your phone or send text and files between the two.
+
+Remotype Host is free of charge and open source. Some features of the Remotype
+phone app are paid; the phone app is a separate, closed-source product. This
+program is not sold separately.
+
+
+2. LICENCE
+
+Remotype Host is licensed under the Apache License, Version 2.0. You may use,
+copy, modify and redistribute it, including commercially, under the terms of
+that licence. You receive it with no fee and no registration.
+
+The full licence text, and the complete source code of this program, are at:
+
+    https://github.com/Custavia/remotype-host
+
+A copy of the Apache License 2.0 is installed alongside this program as
+LICENSE.txt. Nothing in this
+document adds any condition to the Apache License 2.0 grant; where the two
+differ, the Apache License 2.0 governs.
+
+
+3. WHAT YOU SHOULD NOT USE IT FOR
+
+This is not a licence restriction — it is a warning worth reading. Remotype Host
+injects keyboard and mouse input and can capture the screen of the computer it
+runs on. Do not install or use it on a computer you do not own or do not have
+permission to control, and do not use it to monitor or control anyone without
+their knowledge and consent. Doing so is very likely illegal where you live,
+whatever this document says.
+
+
+4. PERMISSIONS AND PRIVACY
+
+Remotype Host communicates only over your local network or a private network you
+have set up yourself. It has no account system and sends no usage data,
+analytics or telemetry to Custavia.
+
+Windows may ask you to allow the program through Windows Firewall so your phone
+can find this computer. The installer can create those rules for you.
+
+The current privacy policy is published at
+https://remotype.custavia.com/privacy and describes how the wider Remotype
+product handles data.
+
+
+5. UPDATES
+
+This program does not check for updates, and makes no internet connection to do
+so. New versions are published on the download page and on the repository's
+releases page; installing one replaces the previously installed version.
+
+
+6. NO WARRANTY
+
+As stated in section 7 of the Apache License 2.0, the software is provided
+"AS IS", without warranty of any kind, express or implied, including but not
+limited to the warranties of merchantability, fitness for a particular purpose
+and non-infringement.
+
+
+7. LIMITATION OF LIABILITY
+
+As stated in section 8 of the Apache License 2.0, and to the maximum extent
+permitted by applicable law, no contributor shall be liable for any indirect,
+incidental, special or consequential damages, or for any loss of data, profits
+or business, arising out of or in connection with the use of or inability to use
+this software.
+
+Nothing here limits any liability that cannot be limited by law, and nothing
+affects any statutory rights you have as a consumer.
+
+
+8. UNINSTALLING
+
+You can remove Remotype Host at any time from Windows Settings ▸ Apps ▸
+Installed apps. Your identity and paired-phone records are kept under
+%LOCALAPPDATA%\Remotype Host and are removed with it.
+
+
+9. CONTACT
+
+Questions about this licence: support.remotype@custavia.com

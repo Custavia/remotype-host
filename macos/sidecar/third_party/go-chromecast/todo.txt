@@ -1,0 +1,6 @@
+UI
+--
+* Get the application metadata to update from whatever the chosen chromecast is doing (not just the first thing it was doing)
+* Include a playlist view
+* Incorporate a file-browser (which could use the playlist view)
+* Allow hiding / unhiding of the log view

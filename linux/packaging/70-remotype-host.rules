@@ -1,0 +1,4 @@
+# Remotype Host injects input through /dev/uinput. By default that device is
+# root-only; this rule hands access to whoever is logged in at the seat (via
+# systemd-logind's "uaccess" tag), so no group membership or root is needed.
+KERNEL=="uinput", SUBSYSTEM=="misc", OPTIONS+="static_node=uinput", TAG+="uaccess"

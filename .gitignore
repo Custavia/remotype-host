@@ -1,0 +1,30 @@
+# Build output
+macos/build/
+macos/build-release/
+macos/.build/
+**/DerivedData/
+*.xcodeproj/
+dist/
+*.exe
+*.dmg
+*.zip
+
+# Editors and OS
+.DS_Store
+.idea/
+.vscode/
+
+# Python bytecode from the RT1 spec scripts
+__pycache__/
+*.pyc
+
+# The interop test phone's throwaway identity (regenerated on first run)
+spec/rt1/.interop_phone_key.pem
+
+# Local secrets never belong here
+*.p8
+*.p12
+*.pem
+*.key
+.env
+.env.*

@@ -1,0 +1,87 @@
+name: RemotypeHost
+options:
+  bundleIdPrefix: com.custavia
+  deploymentTarget:
+    macOS: "13.0"
+  createIntermediateGroups: true
+targets:
+  RemotypeHost:
+    type: application
+    platform: macOS
+    sources:
+      - Sources
+      # RT1 conformance vectors, bundled so the self-test can run in the shipping
+      # build. See docs/RT1.md — four implementations only agree if they are all
+      # measured against the same numbers.
+      - path: Sources/vectors.json
+        buildPhase: resources
+    postCompileScripts:
+      # Build + embed + sign the Go/Pion WebRTC cast helper (Cast DIRECT, §6.5).
+      # Runs before Xcode's final code-sign so the nested helper is sealed.
+      - name: Build cast helper (Go/Pion sidecar)
+        script: '"$SRCROOT/sidecar/build-helper.sh"'
+        basedOnDependencyAnalysis: false
+    info:
+      path: Sources/Info.plist
+      properties:
+        # Derived from the build settings below, NOT hardcoded. A literal here
+        # OVERRIDES MARKETING_VERSION in the generated plist, which is how 1.0.1
+        # and 1.0.2 both shipped reporting themselves as 1.0.0 — the DMG name was
+        # right and the app inside it disagreed.
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        CFBundleDisplayName: Remotype Host
+        # The bundle had NO icon at all — no asset catalog, no icns — so Finder,
+        # the Dock and Alt-Tab all fell back to the generic placeholder.
+        CFBundleIconFile: AppIcon
+        LSUIElement: true
+        # Never App Nap: a listening host must answer instantly, and a napped
+        # menu-bar app can bring its popover up unpainted (seen 2026-09-06).
+        NSAppSleepDisabled: true
+        # NO auto-updater and NO update feed: the host makes zero network
+        # connections except to phones and TVs on the local Wi-Fi. Checking a
+        # release feed would break that promise, so "Check for updates…" opens
+        # the download page in the user's browser instead (see Updater.swift).
+        NSLocalNetworkUsageDescription: "Receives keyboard and trackpad input from your iPhone over the local network."
+        NSBonjourServices:
+          - _hsbtk._tcp
+          - _googlecast._tcp
+          - _airplay._tcp
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.custavia.remotype.host
+        # UNIVERSAL. The app shipped arm64-only through 1.0.2, so it would not
+        # launch at all on an Intel Mac — while the download page promised only
+        # "macOS 13+". A paid app that silently fails on a whole class of Mac is
+        # worse than one that says it needs Apple Silicon. Costs nothing at
+        # runtime: macOS loads the native slice and the other is never paged in.
+        ARCHS: $(ARCHS_STANDARD)
+        ONLY_ACTIVE_ARCH: NO
+        MARKETING_VERSION: "1.1.1"
+        CURRENT_PROJECT_VERSION: "9"
+        # The cast-helper build phase runs `go build` (reads GOCACHE/module cache,
+        # writes into the app bundle) — the default script sandbox blocks all of
+        # that, so it must be off for this target.
+        ENABLE_USER_SCRIPT_SANDBOXING: NO
+        # No team id is committed. Release builds pass DEVELOPMENT_TEAM on the
+        # command line (see scripts/release-mac.sh and docs/RELEASING.md); a
+        # stable Developer ID signature is what keeps the Accessibility (TCC)
+        # grant across updates.
+        SWIFT_VERSION: "5.0"
+      configs:
+        # Debug: ad-hoc signed, relaxed runtime — builds on any Mac with no
+        # Apple account. macOS keys its permission grants to the signature, so
+        # an ad-hoc build asks again after every rebuild; use dev-install.sh
+        # with REMOTYPE_DEVELOPMENT_TEAM for a stable local install.
+        debug:
+          CODE_SIGN_STYLE: Manual
+          CODE_SIGN_IDENTITY: "-"
+          ENABLE_HARDENED_RUNTIME: NO
+        # Release: website distribution via Developer ID + Hardened Runtime
+        # (mandatory for notarization). MANUAL style: macOS Developer ID needs
+        # no provisioning profile, and Automatic+pinned-identity makes Xcode
+        # report "conflicting provisioning settings". See docs/RELEASING.md.
+        release:
+          CODE_SIGN_STYLE: Manual
+          CODE_SIGN_IDENTITY: "Developer ID Application"
+          ENABLE_HARDENED_RUNTIME: YES

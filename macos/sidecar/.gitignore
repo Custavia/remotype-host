@@ -1,0 +1,5 @@
+# Build output + test artifacts (regenerate with gen-testpattern.sh)
+testpattern.h264
+.selftest-proof.png
+remotype-cast-helper
+/dist/
